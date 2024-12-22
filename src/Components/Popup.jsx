@@ -9,7 +9,7 @@ const Popup = ({ isOpen, onClose, children }) => {
             onClick={onClose} 
         >
             <div
-                className="bg-white rounded-lg shadow-lg py-6 px-14 w-1/3"
+                className="bg-white rounded-lg shadow-lg w-11/12 max-w-lg md:w-2/3 lg:w-1/3 p-4 md:p-6 lg:p-8"
                 onClick={(e) => e.stopPropagation()} 
             >
                 {children}

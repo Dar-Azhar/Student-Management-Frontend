@@ -37,10 +37,14 @@ const Main = () => {
         e.preventDefault();
 
         if (!newStudent.name || !selectedCohort || selectedCourses.length === 0) {
-            alert("Please fill all fields correctly!");
+            alert("Please fill up all fields!");
             return;
         }
-
+        const studentExists = students.some((student) => student.name.toLowerCase() === newStudent.name.toLowerCase());
+    if (studentExists) {
+        alert("Student already exists!");
+        return; 
+    }
         const student = {
             name: newStudent.name,
             cohort: selectedCohort,
@@ -49,8 +53,13 @@ const Main = () => {
 
         dispatch(createStudentAsync(student));
         alert("Student added successfully!");
+
+        setNewStudent({ name: "" });
+        setSelectedCohort("");
+        setSelectedCourses([]);
         handlePopupClose();
     };
+
 
     const handleStudentClick = (student) => {
         setSelectedStudent(student);
@@ -60,17 +69,14 @@ const Main = () => {
 
     const handleEdit = (e) => {
         e.preventDefault();
-
         if (!selectedStudent.name || !selectedStudent.cohort || selectedCourses.length === 0) {
             alert("Please fill all fields correctly!");
             return;
         }
-
         const updatedStudent = {
             ...selectedStudent,
             courses: selectedCourses.join(", "),
         };
-
         dispatch(updateStudentAsync(updatedStudent));
         alert("Student updated successfully!");
         handlePopupClose();
@@ -120,9 +126,8 @@ const Main = () => {
     );
 
     return (
-        <main className="flex-1 px-6 ml-56 bg-gray-100">
-            {/* Header */}
-            <div className="flex justify-between flex-row-reverse bg-white pt-4 pb-8 px-5 rounded-t-lg">
+        <main className="flex-1 px-2 md:px-6 max-w-full text-sm md:ml-56 bg-gray-100">
+            <div className="flex justify-between flex-col-reverse items-baseline gap-5 lg:flex-row-reverse bg-white pt-4 pb-8 pl-1 md:px-5 rounded-t-lg">
                 <button
                     onClick={() => setIsPopupVisible(true)}
                     className="flex items-center justify-center gap-2 px-4 py-1 text-gray-600 font-semibold bg-gray-200 rounded-md hover:bg-blue-600 hover:text-white"
@@ -131,7 +136,7 @@ const Main = () => {
                 </button>
                 <div className="flex space-x-4 text-gray-600 font-semibold">
                     <select
-                        className="px-3 py-1 border rounded-md bg-gray-200 cursor-pointer"
+                        className="px-1 md:px-3  py-1 border rounded-md bg-gray-200 cursor-pointer"
                         onChange={(e) => setCohortFilter(e.target.value)}
                     >
                         {cohorts.map((item, index) => (
@@ -139,7 +144,7 @@ const Main = () => {
                         ))}
                     </select>
                     <select
-                        className="px-3 py-1 border rounded-md bg-gray-200 cursor-pointer"
+                        className="px-1 md:px-3 py-1 border rounded-md bg-gray-200 cursor-pointer"
                         onChange={(e) => setCourseFilter(e.target.value)}
                     >
                         {["choose course", ...courses].map((item, index) => (
@@ -149,13 +154,18 @@ const Main = () => {
                 </div>
             </div>
 
-            {/* Student Table */}
-            <div className="overflow-x-auto bg-white shadow-lg rounded-b-lg px-4 text-sm">
-                <table className="w-full table-auto">
+            <div className="overflow-x-auto bg-white shadow-lg rounded-b-lg px-4 py-2">
+                <table className="min-w-max w-full table-auto bg-white text-sm">
                     <thead>
                         <tr className="text-black border-b border-gray-300">
                             {["Student Name", "Cohort", "Courses", "Date Joined", "Last Login", "Status"].map((header) => (
-                                <th key={header} className="px-6 py-3 text-left font-bold">{header}</th>
+                                <th
+                                    key={header}
+                                    className={`px-4 py-3 text-left font-bold ${header === "Last Login" || header === "Status" ? "text-center" : ""
+                                        }`}
+                                >
+                                    {header}
+                                </th>
                             ))}
                         </tr>
                     </thead>
@@ -166,17 +176,27 @@ const Main = () => {
                                 onClick={() => handleStudentClick(student)}
                                 className="border-b border-gray-300 hover:bg-gray-50 cursor-pointer"
                             >
-                                <td className="px-6 py-3">{student.name}</td>
-                                <td className="px-6 py-3">{student.cohort}</td>
-                                <td className="px-6 py-3">
+                                <td className="px-4 py-3 truncate">{student.name}</td>
+                                <td className="px-4 py-3 truncate">{student.cohort}</td>
+                                <td className="px-4 py-3">
                                     {student.courses.split(",").map((course, idx) => (
-                                        <span key={idx} className="bg-gray-100 rounded-md text-sm px-2 py-1 mx-1">{course}</span>
+                                        <span
+                                            key={idx}
+                                            className="bg-gray-100 rounded-md text-sm px-2 py-1 mx-1 block md:inline"
+                                        >
+                                            {course}
+                                        </span>
                                     ))}
                                 </td>
-                                <td className="px-6 py-3">{format(new Date(student.date_joined), 'dd.MMM.yyyy')}</td>
-                                <td className="px-6 py-3">{format(new Date(student.last_login), 'dd.MMM.yyyy hh:mm a')}</td>
-                                <td className="px-6 py-3 text-center">
-                                    <span className={`w-3 h-3 rounded-full inline-block ${student.status ? "bg-green-500" : "bg-red-500"}`} />
+                                <td className="px-4 py-3">{format(new Date(student.date_joined), "dd.MMM.yyyy")}</td>
+                                <td className="px-4 py-3 text-center">
+                                    {format(new Date(student.last_login), "dd.MMM.yyyy hh:mm a")}
+                                </td>
+                                <td className="px-4 py-3 text-center">
+                                    <span
+                                        className={`w-3 h-3 rounded-full inline-block ${student.status ? "bg-green-500" : "bg-red-500"
+                                            }`}
+                                    />
                                 </td>
                             </tr>
                         ))}
@@ -184,7 +204,6 @@ const Main = () => {
                 </table>
             </div>
 
-            {/* Add Student Popup */}
             <Popup isOpen={isPopupVisible} onClose={handlePopupClose}>
                 <h2 className="text-xl font-semibold mb-4">Add New Student</h2>
                 <form onSubmit={handleFormSubmit}>
@@ -236,7 +255,6 @@ const Main = () => {
                 </form>
             </Popup>
 
-            {/* Edit Student Popup */}
             <Popup isOpen={isEditPopupVisible} onClose={handlePopupClose}>
                 <h2 className="text-xl font-semibold mb-4">Edit Student Details</h2>
                 <form onSubmit={handleEdit}>
