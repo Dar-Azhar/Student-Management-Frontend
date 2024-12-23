@@ -41,10 +41,10 @@ const Main = () => {
             return;
         }
         const studentExists = students.some((student) => student.name.toLowerCase() === newStudent.name.toLowerCase());
-    if (studentExists) {
-        alert("Student already exists!");
-        return; 
-    }
+        if (studentExists) {
+            alert("Student already exists!");
+            return;
+        }
         const student = {
             name: newStudent.name,
             cohort: selectedCohort,
@@ -89,13 +89,18 @@ const Main = () => {
     };
 
     const handleCourseToggle = (course) => {
-        setSelectedCourses((prevCourses) =>
-            prevCourses.includes(course)
-                ? prevCourses.filter((c) => c !== course)
-                : prevCourses.length < 2
-                    ? [...prevCourses, course]
-                    : prevCourses
-        );
+        setSelectedCourses((prevCourses) => {
+            const isSelected = prevCourses.includes(course);
+            if (isSelected) {
+                return prevCourses.filter((c) => c !== course);
+            } else if (prevCourses.length < 2) {
+                return [...prevCourses, course];
+            } 
+            return prevCourses;
+        });
+        if (selectedCourses.length >= 2 && !selectedCourses.includes(course)) {
+            alert("You can select up to 2 courses!");
+        }
     };
 
     const handleInputChange = (e) => {
@@ -241,6 +246,7 @@ const Main = () => {
                                     <input
                                         type="checkbox"
                                         value={course}
+                                        checked={selectedCourses.includes(course)}
                                         onChange={() => handleCourseToggle(course)}
                                     />
                                     <span className="ml-2">{course}</span>

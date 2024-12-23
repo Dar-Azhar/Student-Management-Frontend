@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const BASE_API_URL = "http://localhost:3000/api/student";
+// const BASE_API_URL = "http://localhost:3000/api/student";
+const BASE_API_URL = "https://student-management-backend-z0uk.onrender.com/api/student"
 
 export const fetchStudents = async () => {
   try {
