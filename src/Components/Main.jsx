@@ -8,6 +8,7 @@ import {
     deleteStudentAsync
 } from "../Redux/Slices/studentSlice";
 import { useDispatch, useSelector } from "react-redux";
+import Loader from "./Loader";
 
 const Main = () => {
     const [cohortFilter, setCohortFilter] = useState('choose cohort');
@@ -24,9 +25,13 @@ const Main = () => {
 
     useEffect(() => {
         if (status === 'idle') {
+            
             dispatch(fetchStudentsAsync());
         }
     }, [dispatch, status]);
+    if (status === 'loading') {
+        return <Loader loading={true} />;
+    }
 
     const handlePopupClose = () => {
         setIsPopupVisible(false);
